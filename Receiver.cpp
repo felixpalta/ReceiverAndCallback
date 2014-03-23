@@ -43,17 +43,10 @@ void Receiver::receive(const char* data, unsigned int size){
 		if (data[i] == BINARY_START){
 			binCharIndex = 0;
 			binPacketStarted = true;
-			++i;
+			continue;
 		}
-		if (binPacketStarted){
-			while (binCharIndex < BINARY_SIZE && i < size && data[i] != '\0'){
-				if (data[i] == BINARY_START) { // to handle unexpected binary packet header like '$te$test' =>
-					binCharIndex = 0; 
-					++i;
-				}	
+		if (binPacketStarted){	
 				binPacket[binCharIndex++] = data[i];
-				++i;
-			}
 
 			if (binCharIndex == BINARY_SIZE) {
 				binPacket[BINARY_SIZE] = '\0';
