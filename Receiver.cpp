@@ -28,6 +28,13 @@ private:
 	char binPacket[BINARY_SIZE+1];	// for terminating '\0'
 	bool binPacketStarted;
 	unsigned binCharIndex;
+
+	string textPacket;
+	bool textPacketStarted;
+	const string& textEnding() const { 
+		static const string s("\r\n\r\n"); 
+		return s;
+	} 
 };
 
 void Receiver::receive(const char* data, unsigned int size){
