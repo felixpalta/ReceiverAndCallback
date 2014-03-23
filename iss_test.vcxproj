@@ -74,11 +74,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Callback.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Receiver.cpp" />
+    <ClCompile Include="SendingImplementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ICallback.h" />
     <ClInclude Include="IReceiver.h" />
+    <ClInclude Include="SendingImplementation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

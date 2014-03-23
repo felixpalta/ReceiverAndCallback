@@ -1,9 +1,25 @@
 #include <iostream>
+#include <string>
+#include <exception>
 #include "IReceiver.h"
 
 using namespace std;
-int main(){
+int main()
+try
+{
 	IReceiver* r = createReceiver();
-	r->receive()
-	cout << "wat" << endl;
+
+	string input;
+	while (cin >> input)
+		{
+			
+			r->receive(input.c_str(),input.size());
+	}
+
+	destroyReceiver(r);
+
+}
+
+catch (exception& e){
+	cerr << e.what() << endl;
 }
