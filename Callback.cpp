@@ -18,7 +18,7 @@ void Callback::BinaryPacket(const char* data, unsigned int size){
 }
 
 void Callback::TextPacket(const char* data, unsigned int size){
-
+	sendTextPacket(data,size);
 }
 
 ICallback* createCallback(){
