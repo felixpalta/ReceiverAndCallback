@@ -12,7 +12,10 @@ public:
 	callbackInterface(createCallback()),
 	binPacket(),	// default-initialized with '\0'
 	binPacketStarted(false),
-	binCharIndex(0)
+	binCharIndex(0),
+	textPacket(""),
+	textPacketStarted(true),
+	textEndingCount(0)
 	{};
 
 	void receive(const char* data, unsigned int size);
@@ -31,8 +34,10 @@ private:
 
 	string textPacket;
 	bool textPacketStarted;
+	unsigned textEndingCount;
+	string endingBuffer;
 	const string& textEnding() const { 
-		static const string s("\r\n\r\n"); 
+		static const string s("1234"); 
 		return s;
 	} 
 };
@@ -54,9 +59,34 @@ void Receiver::receive(const char* data, unsigned int size){
 				binCharIndex = 0;
 				callbackInterface->BinaryPacket(binPacket,BINARY_SIZE);
 			}
+			continue;
 		}
-		
+		// we get here only if binaryPacket isn't being parsed
 
+		if (textEndingCount >= textEnding().size()) textEndingCount = 0;
+		if (data[i] == textEnding().at(textEndingCount++)) {
+			endingBuffer += data[i];
+		}
+		else {
+			textEndingCount = 0;
+			textPacket += data[i];
+		}
+
+		if (endingBuffer.size() == textEnding().size()){
+			if (endingBuffer == textEnding()){
+				endingBuffer = "";
+				textEndingCount = 0;
+				callbackInterface->TextPacket(textPacket.c_str(),textPacket.size());
+				textPacket = "";
+
+			}
+			else {
+				textPacket += endingBuffer;
+				endingBuffer = "";
+				textEndingCount = 0;
+			}
+
+		}
 	}
 }
 IReceiver*  createReceiver(){
