@@ -1,6 +1,9 @@
+#include <exception>
 #include "ICallback.h"
 #include "IReceiver.h"
 #include "SendingImplementation.h"
+
+
 
 class Callback : public ICallback {
 public:
@@ -23,7 +26,7 @@ void Callback::TextPacket(const char* data, unsigned int size){
 
 ICallback* createCallback(){
 	ICallback* ret = new Callback();
-	if (!ret) throw("Can't create new Callback object");
+	if (!ret) throw std::exception("Can't creater Callback object");;
 	return ret;
 }
 

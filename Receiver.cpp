@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <exception>
 #include "IReceiver.h"
 #include "ICallback.h"
 
@@ -72,7 +73,7 @@ void Receiver::receive(const char* data, unsigned int size){
 
 IReceiver*  createReceiver(){
 	IReceiver* ret = new Receiver();
-	if (!ret) throw("Can't create new Receiver object");
+	if (!ret) throw std::exception("Can't create new Receiver object");
 	return ret;
 }
 

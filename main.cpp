@@ -6,25 +6,26 @@
 #include <fcntl.h>
 
 #include "IReceiver.h"
-#include "ReadCinIntoReceiver.h"
+#include "readInputToReceiver.h"
 
 
 using namespace std;
 
 
-int main()
+int main(int argc, char* argv[])
 try
 {
-	IReceiver* IRec = createReceiver();
+	if (argc < 2) 
+		throw exception("Expected input file name as a parameter");
 
-	// we need to open cin for binary input in order to read /r and /n symbols correctly
-	if (_setmode(_fileno(stdin), _O_BINARY) == -1)
-		cout << "ERROR: can't open cin to read binary" << endl;
+	string filename(argv[1]);
+	ifstream ifs(filename.c_str(),ios::binary);
 
-	// input data for receiver can be of random size, not aligned to packet sizes
-	// we emulate this situation by reading input data with little chunks
+	if (!ifs) throw exception(("Can't open file: " + filename).c_str());
+
+	IReceiver* IRec = createReceiver();	// createReceiver either returns non-NULL pointer or throws
 	
-	readCinIntoReceiver(IRec);
+	readInputToReceiver(ifs,IRec);
 
 	destroyReceiver(IRec);
 

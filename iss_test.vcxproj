@@ -76,14 +76,14 @@
   <ItemGroup>
     <ClCompile Include="Callback.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="ReadCinIntoReceiver.cpp" />
+    <ClCompile Include="readInputToReceiver.cpp" />
     <ClCompile Include="Receiver.cpp" />
     <ClCompile Include="SendingImplementation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ICallback.h" />
     <ClInclude Include="IReceiver.h" />
-    <ClInclude Include="ReadCinIntoReceiver.h" />
+    <ClInclude Include="readInputToReceiver.h" />
     <ClInclude Include="SendingImplementation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
