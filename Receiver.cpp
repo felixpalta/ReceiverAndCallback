@@ -10,28 +10,27 @@ class Receiver : public IReceiver {
 public:
 	Receiver():
 	callbackInterface(createCallback()),
-	binPacket(),	// default-initialized with '\0'
+	binPacket(),	
 	binPacketStarted(false),
-	binCharIndex(0),
 	textPacket()
 	{};
 
 	void receive(const char* data, unsigned int size);
 	~Receiver()	{ destroyCallback(callbackInterface); };
 private:
-	enum {
-		BINARY_START = 0x24,
-		BINARY_SIZE = 4,
-	};
-
 	ICallback* callbackInterface;
 
-	char binPacket[BINARY_SIZE+1];	// for terminating '\0'
-	bool binPacketStarted;
-	unsigned binCharIndex;
+	enum {
+		BINARY_START = 0x24, // start symbol of binary packet
+		BINARY_SIZE = 4,	// length of binary packet
+	};
 
-	string textPacket;
+ 	bool binPacketStarted;
 
+	string binPacket;	// buffer for binary packet parsing
+	string textPacket;	// buffer for text packet parsing
+
+	// returns substring for text ending packet
 	const string& textEnding() const { 
 		static const string s("\r\n\r\n"); 
 		return s;
@@ -44,23 +43,23 @@ static bool hasEnding (std::string const &fullString, std::string const &ending)
 
 void Receiver::receive(const char* data, unsigned int size){
 
+	// checking one symbol per iteration
 	for (unsigned int i = 0; i < size; ++i){
 		if (data[i] == BINARY_START){
-			binCharIndex = 0;
+			binPacket = "";
 			binPacketStarted = true;
 			continue;
 		}
 		if (binPacketStarted){	
-				binPacket[binCharIndex++] = data[i];
+				binPacket += data[i];
 
-			if (binCharIndex == BINARY_SIZE) {
-				binPacket[BINARY_SIZE] = '\0';
+			if (binPacket.size() == BINARY_SIZE) {
 				binPacketStarted = false;
-				binCharIndex = 0;
-				callbackInterface->BinaryPacket(binPacket,BINARY_SIZE);
+				callbackInterface->BinaryPacket(binPacket.c_str(),BINARY_SIZE);
 			}
 			continue;
-		}
+		}	// if (binPacketStarted)
+
 		// we get here only if binaryPacket isn't being parsed
 		textPacket += data[i];
 		if (hasEnding(textPacket,textEnding())){
@@ -68,8 +67,8 @@ void Receiver::receive(const char* data, unsigned int size){
 			callbackInterface->TextPacket(strippedTextPacket.c_str(),strippedTextPacket.size());
 			textPacket = "";
 		}
-	}
-}
+	} // for(..)
+} 
 
 IReceiver*  createReceiver(){
 	IReceiver* ret = new Receiver();
@@ -83,7 +82,7 @@ void destroyReceiver(IReceiver* IRec){
 }
 
 
-static bool hasEnding (std::string const &fullString, std::string const &ending)	
+static bool hasEnding(std::string const &fullString, std::string const &ending)	
 {
 	if (fullString.length() >= ending.length()) {
 		return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));

@@ -1,5 +1,6 @@
-firstTextPacket
+$abcd$1234firstTextPacket
 
-$1234secontTextPacket
+$1234SecontTextPacket
 
-$abcd
+$5678TextPacketWithBinaryPacket$abcdInTheMiddle
+
