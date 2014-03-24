@@ -2,9 +2,9 @@
 #include <string>
 #include <exception>
 #include <fstream>
-
 #include <io.h>
 #include <fcntl.h>
+
 #include "IReceiver.h"
 #include "ReadCinIntoReceiver.h"
 
@@ -23,9 +23,8 @@ try
 
 	// input data for receiver can be of random size, not aligned to packet sizes
 	// we emulate this situation by reading input data with little chunks
-	const size_t CHUNK_SIZE = 5;	// can be any value
 	
-	readCinIntoReceiver(CHUNK_SIZE,IRec);
+	readCinIntoReceiver(IRec);
 
 	destroyReceiver(IRec);
 

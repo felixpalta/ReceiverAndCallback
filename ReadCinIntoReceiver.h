@@ -5,4 +5,4 @@
 #include "IReceiver.h"
 #include "ReadCinIntoReceiver.h"
 
-void readCinIntoReceiver(const size_t chunk_size, IReceiver* IRec);
+void readCinIntoReceiver( IReceiver* IRec);
