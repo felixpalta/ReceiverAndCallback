@@ -22,7 +22,9 @@ void Callback::TextPacket(const char* data, unsigned int size){
 }
 
 ICallback* createCallback(){
-	return new Callback();
+	ICallback* ret = new Callback();
+	if (!ret) throw("Can't create new Callback object");
+	return ret;
 }
 
 void destroyCallback(ICallback* ICal){

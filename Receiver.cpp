@@ -13,9 +13,7 @@ public:
 	binPacket(),	// default-initialized with '\0'
 	binPacketStarted(false),
 	binCharIndex(0),
-	textPacket(""),
-	textPacketStarted(true),
-	textEndingCount(0)
+	textPacket()
 	{};
 
 	void receive(const char* data, unsigned int size);
@@ -33,14 +31,16 @@ private:
 	unsigned binCharIndex;
 
 	string textPacket;
-	bool textPacketStarted;
-	unsigned textEndingCount;
-	string endingBuffer;
+
 	const string& textEnding() const { 
-		static const string s("1234"); 
+		static const string s("\r\n\r\n"); 
 		return s;
 	} 
 };
+
+// a small helper function to compare string endings
+// doesn't qualify as a member function
+static bool hasEnding (std::string const &fullString, std::string const &ending);
 
 void Receiver::receive(const char* data, unsigned int size){
 
@@ -62,39 +62,32 @@ void Receiver::receive(const char* data, unsigned int size){
 			continue;
 		}
 		// we get here only if binaryPacket isn't being parsed
-
-		if (textEndingCount >= textEnding().size()) textEndingCount = 0;
-		if (data[i] == textEnding().at(textEndingCount++)) {
-			endingBuffer += data[i];
-		}
-		else {
-			textEndingCount = 0;
-			textPacket += data[i];
-		}
-
-		if (endingBuffer.size() == textEnding().size()){
-			if (endingBuffer == textEnding()){
-				endingBuffer = "";
-				textEndingCount = 0;
-				callbackInterface->TextPacket(textPacket.c_str(),textPacket.size());
-				textPacket = "";
-
-			}
-			else {
-				textPacket += endingBuffer;
-				endingBuffer = "";
-				textEndingCount = 0;
-			}
-
+		textPacket += data[i];
+		if (hasEnding(textPacket,textEnding())){
+			string strippedTextPacket = textPacket.substr(0,textPacket.size() - textEnding().size());
+			callbackInterface->TextPacket(strippedTextPacket.c_str(),strippedTextPacket.size());
+			textPacket = "";
 		}
 	}
 }
+
 IReceiver*  createReceiver(){
-	
-	return new Receiver();
+	IReceiver* ret = new Receiver();
+	if (!ret) throw("Can't create new Receiver object");
+	return ret;
 }
 
 void destroyReceiver(IReceiver* IRec){
 	
 	delete IRec;
+}
+
+
+static bool hasEnding (std::string const &fullString, std::string const &ending)	
+{
+	if (fullString.length() >= ending.length()) {
+		return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+	} else {
+		return false;
+	}
 }
